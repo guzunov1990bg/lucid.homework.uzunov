@@ -94,7 +94,7 @@ def change_local_config_and_which(log):
             exit()
 
     elif log == 'app.log':
-        print('No local configuration change is being tracked in app.log! Skipping...')
+        print('No local configuration change is being tracked in app.log! Skipping...') # I examined the app.log and I may be wrong here, but I do thing that any exit code other than 0 should be a good condition.
     
     else:
         print('Wrong file, please use Lucid.log or Lucid.log')
