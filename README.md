@@ -1,5 +1,5 @@
 # lucid.homework.uzunov
-Lucid Link Homework
+LucidLink Homework
 
 Welcome to my Repo!
 
