@@ -95,7 +95,7 @@ def check_valid_mount(destination):
     
 def check_if_destination_exist(destination):
     """
-    This function checks if the destination path exist and if it doesn't will create the directory.
+    This function checks if the destination path exist and if it doesn't it will create the directory.
     """
     if not os.path.exists(destination):
         os.makedirs(destination)
