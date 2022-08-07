@@ -19,7 +19,7 @@ def report_log_in_log_out_and_user(log):
     There's no point to repeat the comments in each function, so I'll add them only if there's a major change.
     """
 
-    if log == 'Lucid.log': # Checking if we're passing the Lucid.log file. 
+    if 'Lucid.log' in log: # Checking if we're passing the Lucid.log file. 
         try: #try/except is the best way to try your code block and raise an error if somethings goes wrong. I used this approach for each function.
             d_track = {} # Storing information we will print later on in dicts as key/value pairs are the best way to count for a specific occurance.
             d2_track = {} # Again, we're storing the information for the second condition.
@@ -43,7 +43,7 @@ def report_log_in_log_out_and_user(log):
             print("Something went wrong while processing Lucid.log")
             exit()
             
-    elif log == 'app.log':
+    elif 'app.log' in log:
         try:
             d_track = {}
             d2_track = {}
@@ -75,16 +75,15 @@ def change_local_config_and_which(log):
     I'm using this function to check the amount of times when users changed local configuration and which.
     """
     
-    if log == 'Lucid.log':
+    if 'Lucid.log' in log:
         try:
             d = {}
-            if log == 'Lucid.log':
-                with open(log, "rb") as f: 
-                    contents = str(f.read()).rsplit('\\n') 
-                    for line in contents: 
-                        if 'ClientConfigManager |  New config stored' in line:
-                            new_line = line.split(" | ")[4].split("[")[1].split(":")[0]
-                            d[new_line] = d.get(new_line,0) + 1
+            with open(log, "rb") as f: 
+                contents = str(f.read()).rsplit('\\n') 
+                for line in contents: 
+                    if 'ClientConfigManager |  New config stored' in line:
+                        new_line = line.split(" | ")[4].split("[")[1].split(":")[0]
+                        d[new_line] = d.get(new_line,0) + 1
 
             for key,value in d.items():            
                 print('Local config {} was changed {} times in {}.'.format(key, value, log))
@@ -93,7 +92,7 @@ def change_local_config_and_which(log):
             print("Something went wrong while processing app.log")
             exit()
 
-    elif log == 'app.log':
+    elif 'app.log' in log :
         print('No local configuration change is being tracked in app.log! Skipping...') # I examined the app.log and I may be wrong here, but I do thing that any exit code other than 0 should be a good condition.
     
     else:
@@ -108,7 +107,7 @@ def find_ungraceful_exits(log):
 
     counter = 0 # Instead of using a dict, I just have a simple integer which is counting the amount of issues we find in this function.
 
-    if log == 'Lucid.log':
+    if 'Lucid.log' in log:
         try:
             with open(log, "rb") as f: 
                 contents = str(f.read()).split('\\r\\n') 
@@ -121,11 +120,11 @@ def find_ungraceful_exits(log):
             print("Something went wrong processing Lucid.log!")
             exit()    
 
-    elif log == 'app.log':
+    elif 'app.log' in log:
         try:
             with open(log, 'r') as f:
                 for i in f:
-                    if "Lucid daemon closed with code 1 " in i: # I examined the app.log and I may be wrong here, but I do thing that any exit code other than 0 should be a good condition.
+                    if "Lucid daemon closed with code 1 " in i: # I examined the app.log and I may be wrong here, but I do think that any exit code other than 0 should be a good condition.
                             counter += 1
             print("Lucid daemon had {} exits with code 1.".format(counter))
 
