@@ -1,6 +1,7 @@
 from genericpath import exists
 import requests
 import shutil
+from distutils.dir_util import copy_tree
 import urllib
 import urllib.request
 import argparse
@@ -12,37 +13,56 @@ import subprocess
 
 desc = 'Welcome to the copier script for the LucidLink Technical Support Engineer Level 3 practical assignment. You need to parse a file and destination for the copy process to start.'
 parser = argparse.ArgumentParser(description=desc)
-parser.add_argument("file", type=str, help='specify a file to copy')
+parser.add_argument("object", type=str, help='specify a object to copy')
 parser.add_argument("destination", type=str, help='specify a destination to copy to')
 
 args = parser.parse_args()
 
 
-def copy_this_file(file, destination):
+def main(object, destination):
+
     """
-    This function is responsible for the copying of the file, various checks like:
-    - Check if the file already exists.
+    This function is responsible for the copying of the Object, various checks like:
+    - Check if the Folder/File already exists.
     - Check if we have a valid mount/destination.
     - Check if the destination exsts | if not will be created.
     - Checking if we have 0 dirtyBytes.
     - Sending the empty PUT request.
     """
+
     try:
-        check_valid_mount(destination) # Checking if we have a valid destination served to the script file.
-        check_if_destination_exist(destination) # Checking if we have the destination in the lucid volume, if we don't have a folder for example it will be created.
-        check_if_file_exists(destination, file) # Checking if the file exists, if it does there will be a message that the file will be overwritten.
-        shutil.copyfile(file, destination + "/" + file) # We are using the built in shutil function to initiate the copy of files.
-        print("Initiating copying of file {} to {}".format(file, destination))
-        while get_dirtyBytes() != 0: # While we're copying the files we're checking for the value of the dityBytes. If it's not 0, we're printing copying.
-            print('Copying...')
-            time.sleep(2) # 2 seconds sleep time to avoind too much spam.
-            if get_dirtyBytes() == 0: # Once the dirtyBites go back to zero we print the line below.
-                print('Copy complete dirtyBites field is equal to 0.')
-                if send_empty_put() == 200: # We're checking if we have return code 200 when we send the empty put request and print the line below.
-                    print("Code 200 returned, file index changes have been synchronized with the cloud.")
+        check_if_object_to_copy_exists(object) # Check if the object we want to copy exists at source.
+        check_valid_mount(destination) # Checking if we have a valid destination served to the script.
+        if os.path.isdir(object): # If we copy a directory we use this portion of the script.
+            converted_objectname = object.split("/")[-2] # Splitting up the object so we can only get the last folder we would like to copy.
+            check_if_object_exists_on_volume(converted_objectname, destination) # Checking if the object exists on the Lucid volume, if it does there will be a message that the object will be overwritten.
+            check_if_destination_exist(destination) # Checking if we have the destination on the lucid volume, if we don't have a folder for example it will be created.
+            copy_tree(object, destination + "/" + object.split("/")[-2]) # Copying of the folder.
+            print("Initiating copying folder {} to {}".format(object, destination))
+            while get_dirtyBytes() != 0: # While we're copying the files we're checking for the value of the dityBytes. If it's not 0, we're printing copying.
+                print('Copying...')
+                time.sleep(2) # 2 seconds sleep time to avoind too much spam.
+                if get_dirtyBytes() == 0: # Once the dirtyBites go back to zero we print the line below.
+                    print('Copy complete dirtyBites field is equal to 0.')
+                    if send_empty_put() == 200: # We're checking if we have return code 200 when we send the empty put request and print the line below.
+                        print("Code 200 returned, file index changes have been synchronized with the cloud.")
+
+        elif os.path.isfile(object): # If we copy a file we use this portion of the script.
+            converted_objectname = object.split("/")[-1] # Splitting up the object so we can only get the file want to copy.
+            check_if_object_exists_on_volume(converted_objectname, destination) # Checking if the object exists on the Lucid volume, if it does there will be a message that the file will be overwritten.
+            check_if_destination_exist(destination) # Checking if we have the destination on the lucid volume, if we don't have a folder for example it will be created.
+            shutil.copyfile(object, destination + "/" + converted_objectname) # We are using the built in shutil function to initiate the copy of files.
+            print("Initiating copying of file {} to {}".format(converted_objectname, destination))
+            while get_dirtyBytes() != 0: # While we're copying the files we're checking for the value of the dityBytes. If it's not 0, we're printing copying.
+                print('Copying...')
+                time.sleep(2) # 2 seconds sleep time to avoind too much spam.
+                if get_dirtyBytes() == 0: # Once the dirtyBites go back to zero we print the line below.
+                    print('Copy complete dirtyBites field is equal to 0.')
+                    if send_empty_put() == 200: # We're checking if we have return code 200 when we send the empty put request and print the line below.
+                        print("Code 200 returned, file index changes have been synchronized with the cloud.")
 
     except ValueError: # If something goes wrong with the block below the script will raise an error and quit.
-                print("Something went wrong while trying to copy files to Lucid.")
+                print("Something went wrong while trying to copy Object to Lucid.")
                 exit()
     
 
@@ -70,7 +90,7 @@ def check_valid_mount(destination):
     if check[1].split(":")[1].strip() in destination :
         print('Copy destination is valid!')
     else:
-        print("Copy destination is not a valid Lucid link.")
+        print("Copy destination is not a valid Lucid link. Exiting the script!")
         exit()
     
 def check_if_destination_exist(destination):
@@ -80,22 +100,27 @@ def check_if_destination_exist(destination):
     if not os.path.exists(destination):
         os.makedirs(destination)
 
-def check_if_file_exists(destination, file):
+def check_if_object_exists_on_volume(object, destination):
     """
-    This function checks if file exists and it will display a warning that the file can be overwritten.
+    This function checks if object exists and it will display a warning that the object can be overwritten.
     """
-    if exists(destination + "/" + file):
-        print('Warning file already exists, it will be overwritten!')
+    if exists(destination + "/" + object):
+        print('Warning object already exists, it will be overwritten!')
         input("Press Enter to continue or ctrl+c to stop.")
     
-
+def check_if_object_to_copy_exists(object):
+    if exists(object):
+        print("Object to copy is valid!")
+    else:
+        print("Object {} is not valid and cannot be copied. Exiting script!".format(object))
+        exit()
 
 
 if __name__ == '__main__':
     print("############################")
     print("        STARTING WORK    ")
     print("############################")
-    copy_this_file(args.file, args.destination)
+    main(args.object, args.destination)
     print("############################")
     print("         END WORK    ")
     print("############################")
