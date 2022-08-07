@@ -25,7 +25,7 @@ def main(object, destination):
     This function is responsible for the copying of the Object, various checks like:
     - Check if the Folder/File already exists.
     - Check if we have a valid mount/destination.
-    - Check if the destination exsts | if not will be created.
+    - Check if the destination exists | if not will be created.
     - Checking if we have 0 dirtyBytes.
     - Sending the empty PUT request.
     """
