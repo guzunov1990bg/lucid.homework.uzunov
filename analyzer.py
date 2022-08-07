@@ -40,7 +40,7 @@ def report_log_in_log_out_and_user(log):
                 print('Username {} has logged out {} times in {}.'.format(key, value, log)) # Populating the print with the information we stored in d2_track
 
         except ValueError: # If something goes wrong with the block below the script will raise an error and quit.
-            print("Something went wrong processing Lucid.log!")
+            print("Something went wrong while processing Lucid.log")
             exit()
             
     elif log == 'app.log':
@@ -63,16 +63,16 @@ def report_log_in_log_out_and_user(log):
                 print('Username {} has logged out {} times in {}.'.format(key, value, log))
 
         except ValueError:
-            print("Something went wrong processing app.log!")
+            print("Something went wrong while processing app.log")
             exit()
     else:
-        print('Wrong file, please use Lucid.log or app.log') # This is a safety net, if the user tries to parse something else then app/Lucid.log it will report it and exit.
+        print('You are parsing the wrong file to the analyzer, please use Lucid.log or app.log') # This is a safety net, if the user tries to parse something else then app/Lucid.log it will report it and exit.
         exit()
 
 def change_local_config_and_which(log):
 
     """
-    I'm using this function to the amount of times when users changed local configuration and which.
+    I'm using this function to check the amount of times when users changed local configuration and which.
     """
     
     if log == 'Lucid.log':
@@ -90,14 +90,14 @@ def change_local_config_and_which(log):
                 print('Local config {} was changed {} times in {}.'.format(key, value, log))
 
         except ValueError:
-            print("Something went wrong processing app.log!")
+            print("Something went wrong while processing app.log")
             exit()
 
     elif log == 'app.log':
         print('No local configuration change is being tracked in app.log! Skipping...') # I examined the app.log and I may be wrong here, but I do thing that any exit code other than 0 should be a good condition.
     
     else:
-        print('Wrong file, please use Lucid.log or Lucid.log')
+        print('You are parsing the wrong file to the analyzer, please use Lucid.log or app.log')
         exit()
 
 def find_ungraceful_exits(log):
