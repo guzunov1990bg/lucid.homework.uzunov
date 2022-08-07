@@ -12,8 +12,8 @@ import subprocess
 
 desc = 'Welcome to the copier script for the LucidLink Technical Support Engineer Level 3 practical assignment. You need to parse a file and destination for the copy process to start.'
 parser = argparse.ArgumentParser(description=desc)
-parser.add_argument("file", type=str)
-parser.add_argument("destination", type=str)
+parser.add_argument("file", type=str, help='specify a file to copy')
+parser.add_argument("destination", type=str, help='specify a destination to copy to')
 
 args = parser.parse_args()
 
